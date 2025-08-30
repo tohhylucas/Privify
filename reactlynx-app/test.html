@@ -9,21 +9,25 @@
     <h1>Testing Dashboard Components</h1>
     <div id="test-results"></div>
 
-    <script src="data.js"></script>
+    <script src="data-service.js"></script>
     <script>
       // Test if data loads correctly
-      document.addEventListener("DOMContentLoaded", function () {
+      document.addEventListener("DOMContentLoaded", async function () {
         const results = document.getElementById("test-results");
 
         try {
-          if (typeof singleUserDashboardData !== "undefined") {
+          // Test data service loading
+          const data = await dataService.loadData();
+
+          if (data && data.user) {
             results.innerHTML +=
-              '<p style="color: green;">✅ Data file loaded successfully</p>';
-            results.innerHTML += `<p>User: ${singleUserDashboardData.user.name}</p>`;
-            results.innerHTML += `<p>Comments: ${singleUserDashboardData.recentHighRiskComments.length}</p>`;
+              '<p style="color: green;">✅ Data service loaded successfully</p>';
+            results.innerHTML += `<p>User: ${data.user.name}</p>`;
+            results.innerHTML += `<p>Comments: ${data.recentHighRiskComments.length}</p>`;
+            results.innerHTML += `<p>Risk Score: ${data.user.avgRiskScore}</p>`;
           } else {
             results.innerHTML +=
-              '<p style="color: red;">❌ Data file not loaded</p>';
+              '<p style="color: red;">❌ Data service failed to load data</p>';
           }
 
           // Test Chart.js availability

@@ -200,59 +200,6 @@ function RiskTrendsChart({ trendData, isMobile }) {
   });
 }
 
-function InsightCard({ insight, onClick }) {
-  const clickable = Boolean(insight.actionable);
-  if (clickable) {
-    return (
-      <button
-        type="button"
-        className="insight-card fade-in"
-        style={{ animationDelay: `${insight._delay || 0}s`, cursor: "pointer" }}
-        onClick={() => onClick(insight)}
-        aria-label={`View details for insight: ${insight.title}`}
-      >
-        <div className="insight-header">
-          <div className={`insight-impact ${insight.impact}`}>
-            {insight.impact.toUpperCase()}
-          </div>
-          <div
-            style={{
-              fontSize: "var(--font-size-xs)",
-              color: "var(--text-muted)",
-            }}
-          >
-            {Math.round(insight.confidence * 100)}%
-          </div>
-        </div>
-        <div className="insight-title">{insight.title}</div>
-        <div className="insight-content">{insight.content}</div>
-      </button>
-    );
-  }
-  return (
-    <div
-      className="insight-card fade-in"
-      style={{ animationDelay: `${insight._delay || 0}s` }}
-    >
-      <div className="insight-header">
-        <div className={`insight-impact ${insight.impact}`}>
-          {insight.impact.toUpperCase()}
-        </div>
-        <div
-          style={{
-            fontSize: "var(--font-size-xs)",
-            color: "var(--text-muted)",
-          }}
-        >
-          {Math.round(insight.confidence * 100)}%
-        </div>
-      </div>
-      <div className="insight-title">{insight.title}</div>
-      <div className="insight-content">{insight.content}</div>
-    </div>
-  );
-}
-
 function CommentCard({ comment, onClick }) {
   return (
     <button
@@ -293,21 +240,27 @@ function CommentCard({ comment, onClick }) {
 }
 
 function App() {
-  const [data, setData] = useState(() =>
-    JSON.parse(JSON.stringify(singleUserDashboardData))
-  );
+  const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState(
-    singleUserDashboardData.aiProcessingStats.lastUpdated
-  );
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   // Detect mobile once at the app level and pass down
   const isMobile = useIsMobile();
 
-  // Simulate data loading
+  // Load data from service
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 2000);
-    return () => clearTimeout(t);
+    async function loadData() {
+      try {
+        const loadedData = await dataService.loadData();
+        setData(JSON.parse(JSON.stringify(loadedData)));
+        setLastUpdated(new Date().toISOString());
+      } catch (error) {
+        console.error("Failed to load data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
   }, []);
 
   // Smooth scrolling
@@ -353,11 +306,18 @@ function App() {
 
   function refresh() {
     setIsLoading(true);
-    setTimeout(() => {
-      setData(JSON.parse(JSON.stringify(singleUserDashboardData)));
-      setLastUpdated(singleUserDashboardData.aiProcessingStats.lastUpdated);
-      setIsLoading(false);
-    }, 1000);
+    async function reloadData() {
+      try {
+        const loadedData = await dataService.loadData();
+        setData(JSON.parse(JSON.stringify(loadedData)));
+        setLastUpdated(new Date().toISOString());
+      } catch (error) {
+        console.error("Failed to reload data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    reloadData();
   }
 
   function exportData() {
@@ -365,7 +325,7 @@ function App() {
       user: data.user,
       summary: data.aiExecutiveSummary,
       riskTrends: data.riskTrends,
-      insights: data.intelligentInsights,
+      riskDistribution: data.riskDistribution,
       recentComments: data.recentHighRiskComments,
       exportTimestamp: new Date().toISOString(),
     };
@@ -381,18 +341,6 @@ function App() {
     URL.revokeObjectURL(url);
   }
 
-  function showInsightDetails(insight) {
-    alert(
-      `${insight.title}\n\n${
-        insight.content
-      }\n\nImpact Level: ${insight.impact.toUpperCase()}\nConfidence: ${Math.round(
-        insight.confidence * 100
-      )}%\nActionable: ${
-        insight.actionable ? "Yes" : "No"
-      }\n\nThis insight can help you improve your privacy practices.`
-    );
-  }
-
   function expandComment(comment) {
     alert(
       `Full Comment: ${comment.fullText}\n\nRisk Score: ${
@@ -405,17 +353,30 @@ function App() {
     );
   }
 
-  const avgRisk = data.user.avgRiskScore;
-  let riskLevel;
-  if (avgRisk >= 7) riskLevel = "high";
-  else if (avgRisk >= 4) riskLevel = "moderate";
-  else riskLevel = "low";
-
   const recent = data.riskTrends.slice(-7);
   const trend =
     recent[recent.length - 1].riskScore > recent[0].riskScore
       ? "increasing"
       : "decreasing";
+
+  // Determine risk level for display
+  const getRiskLevel = (score) => {
+    if (score >= 7) return "high";
+    if (score >= 4) return "moderate";
+    return "low";
+  };
+
+  // Show loading while data is being fetched
+  if (!data || isLoading) {
+    return (
+      <div id="app">
+        <div id="loading-indicator" className="loading">
+          <div className="spinner"></div>
+          <p>Loading privacy analysis...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div id="app">
@@ -498,13 +459,9 @@ function App() {
               <div className="ai-insight">
                 <span id="risk-distribution-insight">{`AI Analysis: ${
                   data.user.avgRiskScore
-                } average risk score indicates ${
-                  data.user.avgRiskScore >= 7
-                    ? "high"
-                    : data.user.avgRiskScore >= 4
-                    ? "moderate"
-                    : "low"
-                } privacy risk profile`}</span>
+                } average risk score indicates ${getRiskLevel(
+                  data.user.avgRiskScore
+                )} privacy risk profile`}</span>
               </div>
             </div>
             <div className="chart-wrapper">
@@ -528,25 +485,6 @@ function App() {
               />
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Intelligent Insights */}
-      <section className="insights-section">
-        <div className="section-header">
-          <h2>🧠 Intelligent Insights</h2>
-        </div>
-        <div className="insights-grid" id="insights-grid">
-          {data.intelligentInsights.map((insight) => (
-            <InsightCard
-              key={insight.title}
-              insight={{
-                ...insight,
-                _delay: data.intelligentInsights.indexOf(insight) * 0.1,
-              }}
-              onClick={showInsightDetails}
-            />
-          ))}
         </div>
       </section>
 
