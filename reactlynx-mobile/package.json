@@ -9,7 +9,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@lynx-js/react": "^0.112.4"
+    "@lynx-js/react": "^0.112.4",
+    "chart.js": "^4.5.0"
   },
   "devDependencies": {
     "@lynx-js/preact-devtools": "^5.0.1-6664329",

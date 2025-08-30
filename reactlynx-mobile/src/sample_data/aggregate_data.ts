@@ -1,0 +1,30 @@
+export default {
+  "user": {
+    "id": "user_001",
+    "name": "John Doe",
+    "totalComments": 145,
+    "avgRiskScore": 8.2,
+    "piiTypes": ["Email", "Phone", "Name"],
+    "lastActivity": "2025-08-29",
+    "status": "High Risk",
+    "accountAge": 89,
+    "joinDate": "2025-06-01"
+  },
+  "aiExecutiveSummary": {
+    "overview": "Your privacy profile shows elevated risk with consistent high-risk behavior patterns. You've shared sensitive information including email addresses and phone numbers across 145 comments, resulting in an 8.2 average risk score that requires immediate attention.",
+    "keyFindings": [
+      "Email addresses exposed in 67% of your comments",
+      "Phone number shared 23 times in the last 30 days",
+      "Risk score increased 45% since account creation",
+      "Peak sharing occurs during evening hours (6-9 PM)",
+      "Support-related comments show highest PII exposure"
+    ],
+    "suggestions": [
+      "Remove or edit comments containing contact information",
+      "Enable privacy mode for location-based content",
+      "Review comment history and delete high-risk posts",
+      "Set up automated privacy scanning for future comments",
+      "Consider using privacy-focused alternatives for sensitive discussions"
+    ]
+  }
+};

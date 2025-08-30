@@ -1,119 +1,363 @@
+/* ReactLynx Mobile Privacy Dashboard - Minimal CSS */
+
+/* Basic styles only - ReactLynx has limited CSS support */
+
+/* CSS Variables for safe area handling */
 :root {
-  background-color: #000;
-  --color-text: #fff;
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
 }
 
 .Background {
-  position: fixed;
-  background: radial-gradient(
-    71.43% 62.3% at 46.43% 36.43%,
-    rgba(18, 229, 229, 0) 15%,
-    rgba(239, 155, 255, 0.3) 56.35%,
-    #ff6448 100%
-  );
-  box-shadow: 0px 12.93px 28.74px 0px #ffd28db2 inset;
-  border-radius: 50%;
-  width: 200vw;
-  height: 200vw;
-  top: -60vw;
-  left: -14.27vw;
-  transform: rotate(15.25deg);
+  background: #f8f8f8;
 }
 
 .App {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f8f8f8;
+  color: #000;
+  height: 100vh;
+  overflow: hidden;
+  /* Ensure proper handling of safe areas */
   position: relative;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  /* Ensure the app extends into safe areas but content is properly padded */
+  padding-top: 55px;
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
+  padding-bottom: var(--safe-area-inset-bottom);
 }
 
-text {
-  color: var(--color-text);
+/* Ensure scroll-view works properly */
+scroll-view {
+  height: 100%;
+  overflow-y: auto;
 }
 
 .Banner {
-  flex: 5;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
+  background: linear-gradient(135deg, #fe2c55, #25f4ee);
+  padding: 20px;
+  color: white;
 }
 
 .Logo {
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
+.Logo--lynx,
 .Logo--react {
-  width: 100px;
-  height: 100px;
-  animation: Logo--spin infinite 20s linear;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
 }
 
-.Logo--lynx {
-  width: 100px;
-  height: 100px;
-  animation: Logo--shake infinite 0.5s ease;
+.Title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 10px 0;
 }
 
-@keyframes Logo--spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes Logo--shake {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(0.9);
-  }
-  100% {
-    transform: scale(1);
-  }
+.Subtitle {
+  font-size: 18px;
+  opacity: 0.9;
 }
 
 .Content {
+  padding: 20px;
+}
+
+.Description {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.Arrow {
+  width: 40px;
+  height: 40px;
+  margin: 20px 0;
+}
+
+.Hint {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Dashboard specific styles */
+.dashboard-header {
+  background: linear-gradient(135deg, #fe2c55, #25f4ee);
+  color: white;
+  padding: 20px;
+  /* Safe area support for notched devices - increased top padding */
+  padding-top: max(80px, env(safe-area-inset-top, 80px));
+  padding-left: max(20px, env(safe-area-inset-left, 20px));
+  padding-right: max(20px, env(safe-area-inset-right, 20px));
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.ai-summary {
+  background: linear-gradient(135deg, #f8f0f2, #fef7f8);
+  border-left: 4px solid #fe2c55;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.ai-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.ai-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #25f4ee;
+}
+
+.summary-overview {
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.summary-list-item {
+  padding: 8px 0;
+  padding-left: 16px;
+  position: relative;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.summary-list-item:before {
+  content: "•";
+  color: #fe2c55;
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.privacy-score-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.privacy-score-circle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.privacy-score-text {
+  position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.Arrow {
-  width: 24px;
-  height: 24px;
-}
-
-.Title {
-  font-size: 36px;
-  font-weight: 700;
-}
-
-.Subtitle {
-  font-style: italic;
-  font-size: 22px;
   font-weight: 600;
+}
+
+.privacy-score-number {
+  font-size: 32px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.privacy-score-label {
+  font-size: 16px;
+  color: #999;
+  margin-top: -2px;
+}
+
+.privacy-score-level {
+  text-align: center;
+}
+
+.risk-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.risk-badge.low {
+  background: rgba(37, 244, 238, 0.1);
+  color: #00b4a6;
+  border: 1px solid rgba(37, 244, 238, 0.3);
+}
+
+.risk-badge.medium {
+  background: rgba(255, 107, 53, 0.1);
+  color: #e55a2b;
+  border: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+.risk-badge.high {
+  background: rgba(254, 44, 85, 0.1);
+  color: #e02954;
+  border: 1px solid rgba(254, 44, 85, 0.3);
+}
+
+.chart-container {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.chart-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.chart-bar {
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
   margin-bottom: 8px;
 }
 
-.Description {
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.85);
-  margin: 15rpx;
+.chart-fill {
+  height: 100%;
+  border-radius: 4px;
 }
 
-.Hint {
-  font-size: 12px;
-  margin: 5px;
-  color: rgba(255, 255, 255, 0.65);
+.comment-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 8px;
 }
+
+.comment-card.risk-critical {
+  border-left: 4px solid #fe2c55;
+  background: linear-gradient(135deg, #fef7f8, #ffffff);
+}
+
+.comment-card.risk-high {
+  border-left: 4px solid #ff6b35;
+  background: linear-gradient(135deg, #fff8f0, #ffffff);
+}
+
+.comment-card.risk-medium {
+  border-left: 4px solid #ffd700;
+  background: linear-gradient(135deg, #fffdf0, #ffffff);
+}
+
+.comment-card.risk-low {
+  border-left: 4px solid #25f4ee;
+  background: linear-gradient(135deg, #f0fffe, #ffffff);
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.comment-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.comment-preview {
+  color: #333;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.comment-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pii-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.pii-tag {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: white;
+  background: #fe2c55;
+}
+
+.refresh-button {
+  background: #fe2c55;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 16px;
+  padding: 20px;
+  background: #f8f8f8;
+}
+
+.loading text {
+  color: #666;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* Utility classes */
+.text-center { text-align: center; }
+.text-bold { font-weight: 600; }
+.text-muted { color: #999; }
+.mb-sm { margin-bottom: 8px; }
+.mb-md { margin-bottom: 16px; }
+.mb-lg { margin-bottom: 24px; }
+.mt-sm { margin-top: 8px; }
+.mt-md { margin-top: 16px; }
+.mt-lg { margin-top: 24px; }
