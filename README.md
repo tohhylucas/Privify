@@ -1,6 +1,130 @@
-# Privify
+# Privify Backend
 
-Your real-time privacy coach - flagging sensitive comments, encrypting every step, and building safer habits powered by fully homomorphic encryption and on-device AI.
+This backend implements a privacy-preserving comment analysis system using Fully Homomorphic Encryption (FHE) and on-device inference. The system consists of two servers that work together to analyze TikTok comments while maintaining user privacy.
+
+## 🚀 Quick Start
+
+### 1. Create and Activate Virtual Environment
+
+```bash
+cd backend
+```
+
+```bash
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+```
+
+### 2. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Run the Servers
+
+You need to run two servers simultaneously in separate terminal windows:
+
+**Terminal 1 - On-Device Server (Port 8000):**
+```bash
+uvicorn on_device_server:app --reload --host 127.0.0.1 --port 8000
+```
+
+**Terminal 2 - TikTok Server (Port 5000):**
+```bash
+uvicorn tiktok_server:app --reload --host 127.0.0.1 --port 5000
+```
+
+## 📡 API Endpoints
+
+### On-Device Server (Port 8000)
+
+**POST** `/process`
+- **Purpose**: Main endpoint for comment analysis
+- **Request Body**:
+```json
+{
+    "comment": "lol my street, literally see my bike rack"
+}
+```
+- **Response**: Category classification, risk score, reasoning, and suggestions
+
+
+## 🔍 Example Inference
+
+### Input Comment
+```
+"can't believe u at pine&4th, memories"
+```
+
+### Output Analysis
+**Category**: Location/Geoinformation Violation  
+
+**Risk Score**: 9
+
+**Reason**: The comment "can't believe u at pine&4th, memories" violates the location/geoinformation violation type because it reveals the user's physical location, which is a sensitive personal information. The comment also raises concerns about privacy, as it could potentially reveal the user's whereabouts to third parties.
+
+**Suggestion**: To protect the user's privacy, the comment should be edited to remove any mention of the user's physical location. The user should be encouraged to avoid posting sensitive information about their location in the future.
+
+## 📁 File Structure & Purpose
+
+### Core Server Files
+- **`on_device_server.py`**: Main server that receives comments, handles encryption/decryption, and provides the public API endpoint
+- **`tiktok_server.py`**: Simulates TikTok's ML infrastructure, runs FHE inference on encrypted data and returns encrypted results
+
+### ML Training & FHE-Compliance Models
+- **`train_model.py`**: Trains a classifier to predict comment categories using Concrete ML library, saves FHE-compatible model to `fhe_directory/`
+- **`train_risk_model.py`**: Trains a regressor to predict risk scores using Concrete ML library, saves FHE-compatible model to `fhe_directory_risk/`
+
+### Client & Utilities
+- **`client_side.py`**: Handles quantization, encryption, serialization, FHE server communication, and decryption to output final category and risk score
+- **`utils.py`**: Helper functions for text processing and risk score post-processing
+
+### Data & Models
+- **`fhe_directory/`**: Contains FHE-compatible category classification model and client
+- **`fhe_directory_risk/`**: Contains FHE-compatible risk scoring model and client
+- **`comments.csv`**: Sample training data with 600+ synthetic comments, category labels, and risk scores generated using GPT
+
+## 🔐 Privacy Features
+
+- **Fully Homomorphic Encryption (FHE)**: Enables ML inference on encrypted data
+- **On-Device Processing**: Sensitive data never leaves the user's device unencrypted
+- **Zero-Knowledge Inference**: TikTok servers cannot see the actual comment content
+
+## 🛠️ Development
+
+### Prerequisites
+- Python 3.8+
+- Concrete ML library
+- FastAPI
+- Uvicorn
+
+
+
+## 📊 Data Flow
+
+1. **Comment Input** → On-Device Server
+2. **Encryption** → Client-side encryption using FHE
+3. **FHE Inference** → TikTok Server processes encrypted data
+4. **Decryption** → On-Device Server decrypts results
+5. **Analysis** → Local LLM provides reasoning and suggestions
+6. **Output** → Final results with privacy insights
+
+## 🔧 Troubleshooting
+
+- Ensure both servers are running simultaneously
+- Check that virtual environment is activated
+- Verify all dependencies are installed correctly
+- Check port availability (8000 and 5000)
+- Ensure FHE model directories exist and contain valid models
+
+# Privify Frontend
 
 ## 📱 Project Structure
 
