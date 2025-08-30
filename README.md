@@ -1,4 +1,4 @@
-# ReactLynx-TikTok Privacy Dashboard
+# Privify
 
 A comprehensive privacy monitoring solution featuring both web and mobile applications for tracking and analyzing personal privacy data and risk scores from TikTok and other social media platforms.
 
