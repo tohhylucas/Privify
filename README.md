@@ -81,7 +81,7 @@ uvicorn tiktok_server:app --reload --host 127.0.0.1 --port 5000
 
 - **Response**: Category classification, risk score, reasoning, and suggestions
 
-## 🔍 Example Inference
+## 🔍 Example Inference: For Single Comment
 
 ### Input Comment
 
@@ -98,6 +98,29 @@ uvicorn tiktok_server:app --reload --host 127.0.0.1 --port 5000
 **Reason**: The comment "can't believe u at pine&4th, memories" violates the location/geoinformation violation type because it reveals the user's physical location, which is a sensitive personal information. The comment also raises concerns about privacy, as it could potentially reveal the user's whereabouts to third parties.
 
 **Suggestion**: To protect the user's privacy, the comment should be edited to remove any mention of the user's physical location. The user should be encouraged to avoid posting sensitive information about their location in the future.
+
+## 📝 Example Inference: For Aggregated Smart Insights
+
+### Input
+
+```
+(comment history, reasoning, and suggestion excerpts from first 20 rows of `backend/outputs_with_reasons.csv`)
+```
+
+### Output Analysis
+
+```json
+{
+  "overall_summary": "The user frequently reveals sensitive personal information in comments by disclosing specific locations and daily routines. These disclosures create privacy vulnerabilities because outsiders can track the user's whereabouts, past residences, and habits. Although the tone is casual, the accumulation of details forms a detailed picture of the user's life.",
+
+  "pattern": "The user often references identifiable locations (streets, plazas, malls, bus stops, apartments) and shares details of routines (walking to class, running routes, daily commutes, dog walking). They also link personal history to places (old flat, backyard, afterschool spot). Most disclosures appear unintentional, made in casual or humorous ways.",
+
+  "key_findings": "1. Frequent location/geoinformation exposure through specific landmarks and intersections. 2. Multiple routine disclosures that make movements predictable. 3. References to personal residences and history tied to physical places. 4. Individually low-risk comments, but collectively high-risk when aggregated.",
+
+  "suggestions": "Avoid posting exact street names, intersections, or landmarks; use general terms instead. Do not share predictable routines or timing details. Refrain from referencing current or past residences or personally tied locations. Replace specific mentions with broader, symbolic, or generic phrasing. Before posting, ask: 'Could this detail be used to locate me or predict my movements?' If yes, rephrase or omit."
+}
+```
+
 
 ## 📁 File Structure & Purpose
 
