@@ -109,18 +109,13 @@ uvicorn tiktok_server:app --reload --host 127.0.0.1 --port 5000
 
 ### Output Analysis
 
-```json
-{
-  "overall_summary": "The user frequently reveals sensitive personal information in comments by disclosing specific locations and daily routines. These disclosures create privacy vulnerabilities because outsiders can track the user's whereabouts, past residences, and habits. Although the tone is casual, the accumulation of details forms a detailed picture of the user's life.",
+**overall_summary**: "The user frequently reveals sensitive personal information in comments by disclosing specific locations and daily routines. These disclosures create privacy vulnerabilities because outsiders can track the user's whereabouts, past residences, and habits. Although the tone is casual, the accumulation of details forms a detailed picture of the user's life.",
 
-  "pattern": "The user often references identifiable locations (streets, plazas, malls, bus stops, apartments) and shares details of routines (walking to class, running routes, daily commutes, dog walking). They also link personal history to places (old flat, backyard, afterschool spot). Most disclosures appear unintentional, made in casual or humorous ways.",
+**pattern**: "The user often references identifiable locations (streets, plazas, malls, bus stops, apartments) and shares details of routines (walking to class, running routes, daily commutes, dog walking). They also link personal history to places (old flat, backyard, afterschool spot). Most disclosures appear unintentional, made in casual or humorous ways.",
 
-  "key_findings": "1. Frequent location/geoinformation exposure through specific landmarks and intersections. 2. Multiple routine disclosures that make movements predictable. 3. References to personal residences and history tied to physical places. 4. Individually low-risk comments, but collectively high-risk when aggregated.",
+**key_findings**: "1. Frequent location/geoinformation exposure through specific landmarks and intersections. 2. Multiple routine disclosures that make movements predictable. 3. References to personal residences and history tied to physical places. 4. Individually low-risk comments, but collectively high-risk when aggregated.",
 
-  "suggestions": "Avoid posting exact street names, intersections, or landmarks; use general terms instead. Do not share predictable routines or timing details. Refrain from referencing current or past residences or personally tied locations. Replace specific mentions with broader, symbolic, or generic phrasing. Before posting, ask: 'Could this detail be used to locate me or predict my movements?' If yes, rephrase or omit."
-}
-```
-
+**suggestions**: "Avoid posting exact street names, intersections, or landmarks; use general terms instead. Do not share predictable routines or timing details. Refrain from referencing current or past residences or personally tied locations. Replace specific mentions with broader, symbolic, or generic phrasing. Before posting, ask: 'Could this detail be used to locate me or predict my movements?' If yes, rephrase or omit."
 
 ## 📁 File Structure & Purpose
 
