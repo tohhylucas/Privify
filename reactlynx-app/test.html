@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Test</title>
+  </head>
+  <body>
+    <h1>Testing Dashboard Components</h1>
+    <div id="test-results"></div>
+
+    <script src="data.js"></script>
+    <script>
+      // Test if data loads correctly
+      document.addEventListener("DOMContentLoaded", function () {
+        const results = document.getElementById("test-results");
+
+        try {
+          if (typeof singleUserDashboardData !== "undefined") {
+            results.innerHTML +=
+              '<p style="color: green;">✅ Data file loaded successfully</p>';
+            results.innerHTML += `<p>User: ${singleUserDashboardData.user.name}</p>`;
+            results.innerHTML += `<p>Comments: ${singleUserDashboardData.recentHighRiskComments.length}</p>`;
+          } else {
+            results.innerHTML +=
+              '<p style="color: red;">❌ Data file not loaded</p>';
+          }
+
+          // Test Chart.js availability
+          const script = document.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/npm/chart.js";
+          script.onload = function () {
+            results.innerHTML +=
+              '<p style="color: green;">✅ Chart.js loaded successfully</p>';
+            results.innerHTML +=
+              '<p><a href="index.html">Go to Full Dashboard</a></p>';
+          };
+          script.onerror = function () {
+            results.innerHTML +=
+              '<p style="color: red;">❌ Chart.js failed to load</p>';
+          };
+          document.head.appendChild(script);
+        } catch (error) {
+          results.innerHTML += `<p style="color: red;">❌ Error: ${error.message}</p>`;
+        }
+      });
+    </script>
+  </body>
+</html>

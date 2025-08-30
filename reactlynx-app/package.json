@@ -1,0 +1,26 @@
+{
+  "name": "reactlynx-privacy-dashboard",
+  "version": "1.1.0",
+  "description": "ReactLynx Personal Privacy Dashboard (React 17)",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8000 -o",
+    "serve": "npx http-server -p 8000 -o",
+    "dev": "npx live-server --port=8000 --open=/",
+    "test": "echo 'No tests configured'"
+  },
+  "keywords": [
+    "reactlynx",
+    "privacy",
+    "dashboard",
+    "analytics",
+    "react",
+    "chart.js"
+  ],
+  "author": "ReactLynx",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  }
+}
