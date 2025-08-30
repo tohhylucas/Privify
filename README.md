@@ -2,20 +2,20 @@
 
 ## 📋 Table of Contents
 
-- [Privify Backend](#privify-backend)
-  - [Quick Start](#-quick-start)
-  - [API Endpoints](#-api-endpoints)
-  - [Example Inference](#-example-inference)
-  - [File Structure & Purpose](#-file-structure--purpose)
-  - [Privacy Features](#-privacy-features)
-  - [Development](#-development)
-  - [Data Flow](#-data-flow)
-  - [Troubleshooting](#-troubleshooting)
-- [Privify Frontend](#privify-frontend)
-  - [Project Structure](#-project-structure)
-  - [Quick Start](#-quick-start-1)
-  - [Technology Stack](#-technology-stack)
-  - [Sample Data](#-sample-data)
+-   [Privify Backend](#privify-backend)
+    -   [Quick Start](#-quick-start)
+    -   [API Endpoints](#-api-endpoints)
+    -   [Example Inference](#-example-inference)
+    -   [File Structure & Purpose](#-file-structure--purpose)
+    -   [Privacy Features](#-privacy-features)
+    -   [Development](#-development)
+    -   [Data Flow](#-data-flow)
+    -   [Troubleshooting](#-troubleshooting)
+-   [Privify Frontend](#privify-frontend)
+    -   [Project Structure](#-project-structure)
+    -   [Quick Start](#-quick-start-1)
+    -   [Technology Stack](#-technology-stack)
+    -   [Sample Data](#-sample-data)
 
 ---
 
@@ -70,16 +70,16 @@ uvicorn tiktok_server:app --reload --host 127.0.0.1 --port 5000
 
 **POST** `/process`
 
-- **Purpose**: Main endpoint for comment analysis
-- **Request Body**:
+-   **Purpose**: Main endpoint for comment analysis
+-   **Request Body**:
 
 ```json
 {
-  "comment": "lol my street, literally see my bike rack"
+    "comment": "lol my street, literally see my bike rack"
 }
 ```
 
-- **Response**: Category classification, risk score, reasoning, and suggestions
+-   **Response**: Category classification, risk score, reasoning, and suggestions
 
 ## 🔍 Example Inference: For Single Comment
 
@@ -109,51 +109,51 @@ uvicorn tiktok_server:app --reload --host 127.0.0.1 --port 5000
 
 ### Output Analysis
 
-**overall_summary**: "The user frequently reveals sensitive personal information in comments by disclosing specific locations and daily routines. These disclosures create privacy vulnerabilities because outsiders can track the user's whereabouts, past residences, and habits. Although the tone is casual, the accumulation of details forms a detailed picture of the user's life.",
+**Overall Summary**: "The user frequently reveals sensitive personal information in comments by disclosing specific locations and daily routines. These disclosures create privacy vulnerabilities because outsiders can track the user's whereabouts, past residences, and habits. Although the tone is casual, the accumulation of details forms a detailed picture of the user's life.",
 
-**pattern**: "The user often references identifiable locations (streets, plazas, malls, bus stops, apartments) and shares details of routines (walking to class, running routes, daily commutes, dog walking). They also link personal history to places (old flat, backyard, afterschool spot). Most disclosures appear unintentional, made in casual or humorous ways.",
+**Pattern**: "The user often references identifiable locations (streets, plazas, malls, bus stops, apartments) and shares details of routines (walking to class, running routes, daily commutes, dog walking). They also link personal history to places (old flat, backyard, afterschool spot). Most disclosures appear unintentional, made in casual or humorous ways.",
 
-**key_findings**: "1. Frequent location/geoinformation exposure through specific landmarks and intersections. 2. Multiple routine disclosures that make movements predictable. 3. References to personal residences and history tied to physical places. 4. Individually low-risk comments, but collectively high-risk when aggregated.",
+**Key Findings**: "1. Frequent location/geoinformation exposure through specific landmarks and intersections. 2. Multiple routine disclosures that make movements predictable. 3. References to personal residences and history tied to physical places. 4. Individually low-risk comments, but collectively high-risk when aggregated.",
 
-**suggestions**: "Avoid posting exact street names, intersections, or landmarks; use general terms instead. Do not share predictable routines or timing details. Refrain from referencing current or past residences or personally tied locations. Replace specific mentions with broader, symbolic, or generic phrasing. Before posting, ask: 'Could this detail be used to locate me or predict my movements?' If yes, rephrase or omit."
+**Suggestions**: "Avoid posting exact street names, intersections, or landmarks; use general terms instead. Do not share predictable routines or timing details. Refrain from referencing current or past residences or personally tied locations. Replace specific mentions with broader, symbolic, or generic phrasing. Before posting, ask: 'Could this detail be used to locate me or predict my movements?' If yes, rephrase or omit."
 
 ## 📁 File Structure & Purpose
 
 ### Core Server Files
 
-- **`on_device_server.py`**: Main server that receives comments, handles encryption/decryption, and provides the public API endpoint
-- **`tiktok_server.py`**: Simulates TikTok's ML infrastructure, runs FHE inference on encrypted data and returns encrypted results
+-   **`on_device_server.py`**: Main server that receives comments, handles encryption/decryption, and provides the public API endpoint
+-   **`tiktok_server.py`**: Simulates TikTok's ML infrastructure, runs FHE inference on encrypted data and returns encrypted results
 
 ### ML Training & FHE-Compliance Models
 
-- **`train_model.py`**: Trains a classifier to predict comment categories using Concrete ML library, saves FHE-compatible model to `fhe_directory/`
-- **`train_risk_model.py`**: Trains a regressor to predict risk scores using Concrete ML library, saves FHE-compatible model to `fhe_directory_risk/`
+-   **`train_model.py`**: Trains a classifier to predict comment categories using Concrete ML library, saves FHE-compatible model to `fhe_directory/`
+-   **`train_risk_model.py`**: Trains a regressor to predict risk scores using Concrete ML library, saves FHE-compatible model to `fhe_directory_risk/`
 
 ### Client & Utilities
 
-- **`client_side.py`**: Handles quantization, encryption, serialization, FHE server communication, and decryption to output final category and risk score
-- **`utils.py`**: Helper functions for text processing and risk score post-processing
+-   **`client_side.py`**: Handles quantization, encryption, serialization, FHE server communication, and decryption to output final category and risk score
+-   **`utils.py`**: Helper functions for text processing and risk score post-processing
 
 ### Data & Models
 
-- **`fhe_directory/`**: Contains FHE-compatible category classification model and client
-- **`fhe_directory_risk/`**: Contains FHE-compatible risk scoring model and client
-- **`comments.csv`**: Sample training data with 600+ synthetic comments, category labels, and risk scores generated using GPT
+-   **`fhe_directory/`**: Contains FHE-compatible category classification model and client
+-   **`fhe_directory_risk/`**: Contains FHE-compatible risk scoring model and client
+-   **`comments.csv`**: Sample training data with 600+ synthetic comments, category labels, and risk scores generated using GPT
 
 ## 🔐 Privacy Features
 
-- **Fully Homomorphic Encryption (FHE)**: Enables ML inference on encrypted data
-- **On-Device Processing**: Sensitive data never leaves the user's device unencrypted
-- **Zero-Knowledge Inference**: TikTok servers cannot see the actual comment content
+-   **Fully Homomorphic Encryption (FHE)**: Enables ML inference on encrypted data
+-   **On-Device Processing**: Sensitive data never leaves the user's device unencrypted
+-   **Zero-Knowledge Inference**: TikTok servers cannot see the actual comment content
 
 ## 🛠️ Development
 
 ### Prerequisites
 
-- Python 3.8+
-- Concrete ML library
-- FastAPI
-- Uvicorn
+-   Python 3.8+
+-   Concrete ML library
+-   FastAPI
+-   Uvicorn
 
 ## 📊 Data Flow
 
@@ -166,11 +166,11 @@ uvicorn tiktok_server:app --reload --host 127.0.0.1 --port 5000
 
 ## 🔧 Troubleshooting
 
-- Ensure both servers are running simultaneously
-- Check that virtual environment is activated
-- Verify all dependencies are installed correctly
-- Check port availability (8000 and 5000)
-- Ensure FHE model directories exist and contain valid models
+-   Ensure both servers are running simultaneously
+-   Check that virtual environment is activated
+-   Verify all dependencies are installed correctly
+-   Check port availability (8000 and 5000)
+-   Ensure FHE model directories exist and contain valid models
 
 # Privify Frontend
 
@@ -178,15 +178,15 @@ uvicorn tiktok_server:app --reload --host 127.0.0.1 --port 5000
 
 This repository contains two applications that provide the same privacy dashboard view:
 
-- **`reactlynx-app/`** - Web application built with React 17 and vanilla JavaScript
-- **`reactlynx-mobile/`** - Mobile application built with ReactLynx framework and TypeScript
+-   **`reactlynx-app/`** - Web application built with React 17 and vanilla JavaScript
+-   **`reactlynx-mobile/`** - Mobile application built with ReactLynx framework and TypeScript
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- **Node.js** (version 18 or higher)
-- **npm** (comes with Node.js)
+-   **Node.js** (version 18 or higher)
+-   **npm** (comes with Node.js)
 
 ### Running the Web Application (reactlynx-app)
 
@@ -222,19 +222,19 @@ The mobile application will start and display a QR code in the terminal. Scan th
 
 ### Mobile Application
 
-- **Frontend**: ReactLynx framework, TypeScript
-- **Charts**: Chart.js
-- **Build Tool**: Rspeedy (Rsbuild-based)
+-   **Frontend**: ReactLynx framework, TypeScript
+-   **Charts**: Chart.js
+-   **Build Tool**: Rspeedy (Rsbuild-based)
 
 ### Web Application
 
-- **Frontend**: React 17, Vanilla JavaScript
-- **Charts**: Chart.js
-- **Styling**: CSS3 with Grid and Flexbox
+-   **Frontend**: React 17, Vanilla JavaScript
+-   **Charts**: Chart.js
+-   **Styling**: CSS3 with Grid and Flexbox
 
 ## 📊 Sample Data
 
 Both applications use data that is generated from the SLMs under the sample_data folder:
 
-- Aggregate privacy data (`aggregate_data.json`)
-- Comment analysis data (`comments.json`)
+-   Aggregate privacy data (`aggregate_data.json`)
+-   Comment analysis data (`comments.json`)
