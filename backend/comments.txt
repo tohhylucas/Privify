@@ -1,0 +1,12 @@
+# single comment (smaller + faster model)
+# { input = comment + tag + score, output =
+#     reasoning: "The comment contains specific location information ('my street') and a visual element ('my bike rack'), which could potentially be used to identify the user's location."
+#     suggestion: "Consider removing or generalizing location-specific details to protect user privacy."
+# }
+
+# comment db 
+# [on device storing -> comments + tags + score + reasoning + suggestion + date time]
+  
+# aggregate comments (fine tuned gpt 5 llm)
+# { input = comment db, output = stuff like summary, trends, statistics, patterns, summary suggestion 
+# }
