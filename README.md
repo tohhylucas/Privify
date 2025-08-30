@@ -1,6 +1,6 @@
 # Privify
 
-A comprehensive privacy monitoring solution featuring both web and mobile applications for tracking and analyzing personal privacy data and risk scores from TikTok and other social media platforms.
+Your real-time privacy coach - flagging sensitive comments, encrypting every step, and building safer habits powered by fully homomorphic encryption and on-device AI.
 
 ## 📱 Project Structure
 
@@ -48,17 +48,17 @@ The mobile application will start and display a QR code in the terminal. Scan th
 
 ## 🛠️ Technology Stack
 
-### Web Application
-
-- **Frontend**: React 17, Vanilla JavaScript
-- **Charts**: Chart.js
-- **Styling**: CSS3 with Grid and Flexbox
-
 ### Mobile Application
 
 - **Frontend**: ReactLynx framework, TypeScript
 - **Charts**: Chart.js
 - **Build Tool**: Rspeedy (Rsbuild-based)
+
+### Web Application
+
+- **Frontend**: React 17, Vanilla JavaScript
+- **Charts**: Chart.js
+- **Styling**: CSS3 with Grid and Flexbox
 
 ## 📊 Sample Data
 
