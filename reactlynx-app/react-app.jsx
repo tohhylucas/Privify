@@ -1,6 +1,78 @@
 /* React 17 dashboard app (no build step) */
 const { useState, useEffect, useRef, useMemo } = React;
 
+// Custom hook for scroll animations using Intersection Observer
+function useScrollAnimation(options = {}) {
+  const [isVisible, setIsVisible] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const elementRef = useRef(null);
+
+  useEffect(() => {
+    const element = elementRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setIsVisible(true);
+          setHasAnimated(true);
+        }
+      },
+      {
+        threshold: options.threshold || 0.1,
+        rootMargin: options.rootMargin || "0px 0px -100px 0px",
+        ...options,
+      }
+    );
+
+    observer.observe(element);
+
+    return () => {
+      if (element) observer.unobserve(element);
+    };
+  }, [hasAnimated, options]);
+
+  return [elementRef, isVisible];
+}
+
+// Enhanced hook for staggered animations
+function useStaggeredAnimation(itemCount, options = {}) {
+  const [visibleItems, setVisibleItems] = useState(new Set());
+  const [hasStarted, setHasStarted] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasStarted) {
+          setHasStarted(true);
+          // Stagger the appearance of items
+          for (let i = 0; i < itemCount; i++) {
+            setTimeout(() => {
+              setVisibleItems((prev) => new Set([...prev, i]));
+            }, i * (options.staggerDelay || 100));
+          }
+        }
+      },
+      {
+        threshold: options.threshold || 0.1,
+        rootMargin: options.rootMargin || "0px 0px -50px 0px",
+      }
+    );
+
+    observer.observe(container);
+
+    return () => {
+      if (container) observer.unobserve(container);
+    };
+  }, [itemCount, hasStarted, options]);
+
+  return [containerRef, visibleItems];
+}
+
 // Add a small hook to detect mobile screens
 function useIsMobile(breakpoint = 768) {
   const getIsMobile = () =>
@@ -19,9 +91,10 @@ function useIsMobile(breakpoint = 768) {
 function RiskDistributionChart({ data, isMobile }) {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
+  const [containerRef, isVisible] = useScrollAnimation({ threshold: 0.3 });
 
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !isVisible) return;
     const ctx = canvasRef.current.getContext("2d");
     if (chartRef.current) chartRef.current.destroy();
 
@@ -75,24 +148,33 @@ function RiskDistributionChart({ data, isMobile }) {
             bodyFont: { size: isMobile ? 10 : 12 },
           },
         },
-        animation: { animateRotate: true, duration: isMobile ? 800 : 1500 },
+        animation: {
+          animateRotate: true,
+          duration: isMobile ? 1200 : 2000,
+          delay: 300, // Add delay for scroll animation
+        },
       },
     });
 
     return () => {
       if (chartRef.current) chartRef.current.destroy();
     };
-  }, [data, isMobile]);
+  }, [data, isMobile, isVisible]);
 
-  return React.createElement("canvas", {
-    ref: canvasRef,
-    id: "riskDistributionChart",
+  return React.createElement("div", {
+    ref: containerRef,
+    className: `chart-animation-container ${isVisible ? "animate-in" : ""}`,
+    children: React.createElement("canvas", {
+      ref: canvasRef,
+      id: "riskDistributionChart",
+    }),
   });
 }
 
 function RiskTrendsChart({ trendData, isMobile }) {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
+  const [containerRef, isVisible] = useScrollAnimation({ threshold: 0.3 });
 
   const labels = useMemo(
     () =>
@@ -106,7 +188,7 @@ function RiskTrendsChart({ trendData, isMobile }) {
   );
 
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !isVisible) return;
     const ctx = canvasRef.current.getContext("2d");
     if (chartRef.current) chartRef.current.destroy();
 
@@ -183,8 +265,9 @@ function RiskTrendsChart({ trendData, isMobile }) {
         },
         interaction: { mode: "nearest", axis: "x", intersect: false },
         animation: {
-          duration: isMobile ? 1000 : 2000,
+          duration: isMobile ? 1500 : 2500,
           easing: "easeInOutQuart",
+          delay: 400, // Add delay for scroll animation
         },
       },
     });
@@ -192,11 +275,15 @@ function RiskTrendsChart({ trendData, isMobile }) {
     return () => {
       if (chartRef.current) chartRef.current.destroy();
     };
-  }, [labels, trendData, isMobile]);
+  }, [labels, trendData, isMobile, isVisible]);
 
-  return React.createElement("canvas", {
-    ref: canvasRef,
-    id: "riskTrendsChart",
+  return React.createElement("div", {
+    ref: containerRef,
+    className: `chart-animation-container ${isVisible ? "animate-in" : ""}`,
+    children: React.createElement("canvas", {
+      ref: canvasRef,
+      id: "riskTrendsChart",
+    }),
   });
 }
 
@@ -212,7 +299,7 @@ function CommentCard({ comment, onClick }) {
   return (
     <button
       type="button"
-      className={`comment-card fade-in ${getRiskClass(comment.riskScore)}`}
+      className={`comment-card ${getRiskClass(comment.riskScore)}`}
       style={{ animationDelay: `${comment._delay || 0}s`, cursor: "pointer" }}
       onClick={() => onClick(comment)}
       aria-label={`Expand TikTok comment ${comment.id}`}
@@ -266,10 +353,158 @@ function CommentCard({ comment, onClick }) {
   );
 }
 
+function PrivacyScoreCircle({ score, isMobile }) {
+  const [animatedScore, setAnimatedScore] = useState(0);
+  const [containerRef, isVisible] = useScrollAnimation({ threshold: 0.4 });
+
+  useEffect(() => {
+    if (!isVisible) return;
+    const timer = setTimeout(() => {
+      setAnimatedScore(score);
+    }, 600); // Increased delay for scroll animation
+    return () => clearTimeout(timer);
+  }, [score, isVisible]);
+
+  const radius = isMobile ? 60 : 80;
+  const strokeWidth = isMobile ? 8 : 12;
+  const normalizedRadius = radius - strokeWidth * 2;
+  const circumference = normalizedRadius * 2 * Math.PI;
+  const strokeDasharray = `${circumference} ${circumference}`;
+  const strokeDashoffset = circumference - (animatedScore / 10) * circumference;
+
+  // Determine color based on score
+  const getColor = (score) => {
+    if (score >= 7) return "#FE2C55"; // TikTok red for high risk
+    if (score >= 4) return "#FF6B35"; // Orange for medium risk
+    return "#25F4EE"; // TikTok cyan for low risk
+  };
+
+  const getGradientId = (score) => {
+    if (score >= 7) return "highRiskGradient";
+    if (score >= 4) return "mediumRiskGradient";
+    return "lowRiskGradient";
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      className={`privacy-score-container ${isVisible ? "animate-in" : ""}`}
+    >
+      <div className="privacy-score-circle">
+        <svg
+          height={radius * 2}
+          width={radius * 2}
+          className="privacy-score-svg"
+        >
+          {/* Define gradients */}
+          <defs>
+            <linearGradient
+              id="highRiskGradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop offset="0%" stopColor="#FE2C55" />
+              <stop offset="100%" stopColor="#FF6B35" />
+            </linearGradient>
+            <linearGradient
+              id="mediumRiskGradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop offset="0%" stopColor="#FF6B35" />
+              <stop offset="100%" stopColor="#FFD700" />
+            </linearGradient>
+            <linearGradient
+              id="lowRiskGradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop offset="0%" stopColor="#25F4EE" />
+              <stop offset="100%" stopColor="#00D4AA" />
+            </linearGradient>
+          </defs>
+
+          {/* Background circle */}
+          <circle
+            stroke="#f0f0f0"
+            fill="transparent"
+            strokeWidth={strokeWidth}
+            r={normalizedRadius}
+            cx={radius}
+            cy={radius}
+          />
+
+          {/* Progress circle */}
+          <circle
+            stroke={`url(#${getGradientId(animatedScore)})`}
+            fill="transparent"
+            strokeWidth={strokeWidth}
+            strokeDasharray={strokeDasharray}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            r={normalizedRadius}
+            cx={radius}
+            cy={radius}
+            style={{
+              transition: "stroke-dashoffset 2s ease-in-out",
+              transform: "rotate(-90deg)",
+              transformOrigin: "50% 50%",
+            }}
+          />
+        </svg>
+
+        {/* Score text in center */}
+        <div className="privacy-score-text">
+          <span
+            className="privacy-score-number"
+            style={{ color: getColor(animatedScore) }}
+          >
+            {animatedScore.toFixed(1)}
+          </span>
+          <span className="privacy-score-label">/ 10</span>
+        </div>
+      </div>
+
+      {/* Risk level indicator */}
+      <div className="privacy-score-level">
+        <span
+          className={`risk-badge ${
+            animatedScore >= 7 ? "high" : animatedScore >= 4 ? "medium" : "low"
+          }`}
+        >
+          {animatedScore >= 7
+            ? "High Risk"
+            : animatedScore >= 4
+            ? "Medium Risk"
+            : "Low Risk"}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
+
+  // Scroll animation refs
+  const [headerRef, headerVisible] = useScrollAnimation({ threshold: 0.1 });
+  const [summaryRef, summaryVisible] = useScrollAnimation({ threshold: 0.2 });
+  const [chartsRef, chartsVisible] = useScrollAnimation({ threshold: 0.1 });
+  const [commentsRef, commentsVisible] = useScrollAnimation({ threshold: 0.1 });
+
+  // Staggered animation for comments
+  const [commentContainerRef, visibleComments] = useStaggeredAnimation(
+    data?.recentHighRiskComments?.length || 0,
+    { staggerDelay: 150, threshold: 0.2 }
+  );
 
   // Initialize data service
   const dataService = new DataService();
@@ -423,7 +658,10 @@ function App() {
   return (
     <div id="app">
       {/* Header */}
-      <header className="dashboard-header">
+      <header
+        ref={headerRef}
+        className={`dashboard-header ${headerVisible ? "animate-in" : ""}`}
+      >
         <h1>TikTok Privacy Dashboard</h1>
         <div className="user-info">
           <span id="current-user">{`${data.user.name} (@${data.user.id}) - ${data.user.status}`}</span>
@@ -434,7 +672,10 @@ function App() {
       </header>
 
       {/* AI Executive Summary */}
-      <section className="ai-summary-section">
+      <section
+        ref={summaryRef}
+        className={`ai-summary-section ${summaryVisible ? "animate-in" : ""}`}
+      >
         <div className="section-header">
           <h2>🎯 AI Privacy Analysis</h2>
           <div className="ai-status">
@@ -443,26 +684,43 @@ function App() {
           </div>
         </div>
         <div className="summary-content">
-          <div className="overview-card">
+          <div
+            className={`overview-card ${summaryVisible ? "animate-in" : ""}`}
+            style={{ animationDelay: "0.2s" }}
+          >
             <h3>TikTok Comment Analysis Overview</h3>
             <p id="summary-overview">{data.aiExecutiveSummary.overview}</p>
           </div>
           <div className="summary-grid">
-            <div className="summary-item">
+            <div
+              className={`summary-item ${summaryVisible ? "animate-in" : ""}`}
+              style={{ animationDelay: "0.4s" }}
+            >
               <h4>TikTok Privacy Insights</h4>
               <ul id="key-findings">
-                {data.aiExecutiveSummary.keyFindings.map((finding) => (
-                  <li key={finding} className="slide-in">
+                {data.aiExecutiveSummary.keyFindings.map((finding, index) => (
+                  <li
+                    key={finding}
+                    className={`slide-in ${summaryVisible ? "animate-in" : ""}`}
+                    style={{ animationDelay: `${0.6 + index * 0.1}s` }}
+                  >
                     {finding}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="summary-item">
+            <div
+              className={`summary-item ${summaryVisible ? "animate-in" : ""}`}
+              style={{ animationDelay: "0.5s" }}
+            >
               <h4>Recommended Actions</h4>
               <ul id="priority-actions">
-                {data.aiExecutiveSummary.priorities.map((p) => (
-                  <li key={p} className="slide-in">
+                {data.aiExecutiveSummary.suggestions.map((p, index) => (
+                  <li
+                    key={p}
+                    className={`slide-in ${summaryVisible ? "animate-in" : ""}`}
+                    style={{ animationDelay: `${0.7 + index * 0.1}s` }}
+                  >
                     {p}
                   </li>
                 ))}
@@ -473,8 +731,27 @@ function App() {
       </section>
 
       {/* Charts Section */}
-      <section className="charts-section">
+      <section
+        ref={chartsRef}
+        className={`charts-section ${chartsVisible ? "animate-in" : ""}`}
+      >
         <div className="charts-grid">
+          <div className="chart-container">
+            <div className="chart-header">
+              <h3>Privacy Score</h3>
+              <div className="ai-insight">
+                <span id="privacy-score-insight">{`Average privacy risk from ${
+                  data.user.totalComments || "your"
+                } TikTok comments analyzed`}</span>
+              </div>
+            </div>
+            <div className="chart-wrapper privacy-score-wrapper">
+              <PrivacyScoreCircle
+                score={data.user.avgPrivacyScore || data.user.avgRiskScore}
+                isMobile={isMobile}
+              />
+            </div>
+          </div>
           <div className="chart-container">
             <div className="chart-header">
               <h3>Comment Risk Distribution</h3>
@@ -511,7 +788,10 @@ function App() {
       </section>
 
       {/* Recent High-Risk Comments */}
-      <section className="comments-section">
+      <section
+        ref={commentsRef}
+        className={`comments-section ${commentsVisible ? "animate-in" : ""}`}
+      >
         <div className="section-header">
           <h2>⚠️ High-Risk TikTok Comments</h2>
           <div className="comments-count">
@@ -521,13 +801,24 @@ function App() {
             high-risk comments identified in your TikTok activity
           </div>
         </div>
-        <div className="comments-container" id="comments-container">
+        <div
+          ref={commentContainerRef}
+          className="comments-container"
+          id="comments-container"
+        >
           {data.recentHighRiskComments.map((c, i) => (
-            <CommentCard
+            <div
               key={c.id}
-              comment={{ ...c, _delay: i * 0.05 }}
-              onClick={expandComment}
-            />
+              className={`comment-wrapper ${
+                visibleComments.has(i) ? "animate-in" : ""
+              }`}
+              style={{ animationDelay: `${i * 0.1}s` }}
+            >
+              <CommentCard
+                comment={{ ...c, _delay: 0 }}
+                onClick={expandComment}
+              />
+            </div>
           ))}
         </div>
       </section>

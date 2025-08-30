@@ -28,6 +28,9 @@ class DataService {
   }
 
   processData() {
+    // Calculate average privacy score from comments data
+    const avgPrivacyScore = this.calculateAveragePrivacyScore();
+
     // Generate risk trends from comments data
     const riskTrends = this.generateRiskTrends();
 
@@ -38,12 +41,32 @@ class DataService {
     const riskDistribution = this.calculateRiskDistribution();
 
     return {
-      user: this.aggregateData.user,
+      user: {
+        ...this.aggregateData.user,
+        avgPrivacyScore: avgPrivacyScore,
+      },
       aiExecutiveSummary: this.aggregateData.aiExecutiveSummary,
       riskDistribution: riskDistribution,
       riskTrends: riskTrends,
       recentHighRiskComments: recentHighRiskComments,
     };
+  }
+
+  calculateAveragePrivacyScore() {
+    if (
+      !this.commentsData ||
+      !this.commentsData.comments ||
+      this.commentsData.comments.length === 0
+    ) {
+      return 0;
+    }
+
+    const totalScore = this.commentsData.comments.reduce((sum, comment) => {
+      return sum + (comment.riskLevel || 0);
+    }, 0);
+
+    const averageScore = totalScore / this.commentsData.comments.length;
+    return Math.round(averageScore * 10) / 10; // Round to 1 decimal place
   }
 
   generateRiskTrends() {

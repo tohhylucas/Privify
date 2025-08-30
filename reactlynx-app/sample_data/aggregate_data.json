@@ -19,7 +19,7 @@
       "Peak sharing occurs during evening hours (6-9 PM)",
       "Support-related comments show highest PII exposure"
     ],
-    "priorities": [
+    "suggestions": [
       "Review and edit comments containing email addresses",
       "Enable privacy notifications for high-risk content",
       "Complete privacy training module (required)",
