@@ -4,25 +4,21 @@
     "name": "John Doe",
     "totalComments": 145,
     "avgRiskScore": 8.2,
-    "piiTypes": ["Email", "Phone", "Name"],
+    "piiTypes": ["Geolocation", "Contact Information", "Routines"],
     "lastActivity": "2025-08-29",
     "status": "High Risk",
     "accountAge": 89,
     "joinDate": "2025-06-01"
   },
   "aiExecutiveSummary": {
-    "overview": "Your privacy profile shows elevated risk with consistent high-risk behavior patterns. You've shared sensitive information including email addresses and phone numbers across 145 comments, resulting in an 8.2 average risk score that requires immediate attention.",
+    "overview": "Your privacy profile shows elevated risk with consistent high-risk behavior patterns. You've shared sensitive information that reveals geolocation and routines across 145 comments, resulting in an 8.2 average risk score that requires immediate attention.",
     "keyFindings": [
-      "Email addresses exposed in 67% of your comments",
-      "Phone number shared 23 times in the last 30 days",
+      "Geolocation-based PIIs shared 23 times in the last 30 days",
       "Risk score increased 45% since account creation",
-      "Peak sharing occurs during evening hours (6-9 PM)",
-      "Support-related comments show highest PII exposure"
+      "Peak sharing occurs during evening hours (6-9 PM)"
     ],
     "suggestions": [
-      "Review and edit comments containing email addresses",
-      "Enable privacy notifications for high-risk content",
-      "Complete privacy training module (required)",
+      "Review and edit comments that reveal your daily routines and geolocation data",
       "Set up automatic PII detection alerts",
       "Review privacy settings for support interactions"
     ]
