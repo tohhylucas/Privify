@@ -1,0 +1,124 @@
+export default {
+  "comments": [
+    {
+      "comment": "Just finished my morning run around Central Park! Beautiful day for exercise. Meeting Sarah at the coffee shop on 82nd Street at 2 PM.",
+      "commentDateTime": "2025-08-29T09:15:00Z",
+      "contactInformation": false,
+      "geolocationInformation": true,
+      "scheduleInformation": true,
+      "riskLevel": 7
+    },
+    {
+      "comment": "Thanks for the great presentation today! Really learned a lot about the new features.",
+      "commentDateTime": "2025-08-29T16:30:00Z",
+      "contactInformation": false,
+      "geolocationInformation": false,
+      "scheduleInformation": false,
+      "riskLevel": 2
+    },
+    {
+      "comment": "My email is john.doe@gmail.com and you can reach me at 555-123-4567 for any questions about this issue. I've been having problems with my account and need immediate help.",
+      "commentDateTime": "2025-08-29T14:23:00Z",
+      "contactInformation": true,
+      "geolocationInformation": false,
+      "scheduleInformation": false,
+      "riskLevel": 9
+    },
+    {
+      "comment": "Hi everyone! I'm John Doe from Springfield, you can contact me directly at john.doe@company.com if you want to collaborate on this project.",
+      "commentDateTime": "2025-08-29T11:45:00Z",
+      "contactInformation": true,
+      "geolocationInformation": true,
+      "scheduleInformation": false,
+      "riskLevel": 8
+    },
+    {
+      "comment": "You can call me at 555-123-4567 anytime after 6 PM. My name is John and I'm available most evenings to discuss this further.",
+      "commentDateTime": "2025-08-28T19:32:00Z",
+      "contactInformation": true,
+      "geolocationInformation": false,
+      "scheduleInformation": true,
+      "riskLevel": 8
+    },
+    {
+      "comment": "My email address is john.doe@gmail.com in case anyone wants to reach out about this topic. I have a lot of experience in this area.",
+      "commentDateTime": "2025-08-28T16:18:00Z",
+      "contactInformation": true,
+      "geolocationInformation": false,
+      "scheduleInformation": false,
+      "riskLevel": 7
+    },
+    {
+      "comment": "Great weather today! Perfect for outdoor activities.",
+      "commentDateTime": "2025-08-28T12:00:00Z",
+      "contactInformation": false,
+      "geolocationInformation": false,
+      "scheduleInformation": false,
+      "riskLevel": 1
+    },
+    {
+      "comment": "Hey, I'm John from the Springfield area. Feel free to contact me at john.doe@company.com if you have any questions about local services.",
+      "commentDateTime": "2025-08-27T20:15:00Z",
+      "contactInformation": true,
+      "geolocationInformation": true,
+      "scheduleInformation": false,
+      "riskLevel": 8
+    },
+    {
+      "comment": "You can reach John Doe at 555-123-4567 for more information about this service. We offer competitive rates and excellent customer support.",
+      "commentDateTime": "2025-08-27T15:42:00Z",
+      "contactInformation": true,
+      "geolocationInformation": false,
+      "scheduleInformation": false,
+      "riskLevel": 8
+    },
+    {
+      "comment": "Looking forward to the weekend! Going to visit the local museum with friends.",
+      "commentDateTime": "2025-08-27T10:30:00Z",
+      "contactInformation": false,
+      "geolocationInformation": true,
+      "scheduleInformation": true,
+      "riskLevel": 4
+    },
+    {
+      "comment": "Hi there! My contact info is john.doe@gmail.com if anyone needs to follow up on this discussion.",
+      "commentDateTime": "2025-08-26T13:27:00Z",
+      "contactInformation": true,
+      "geolocationInformation": false,
+      "scheduleInformation": false,
+      "riskLevel": 7
+    },
+    {
+      "comment": "My phone number is 555-123-4567 and I'm usually available after work hours to discuss this further. John here, thanks for the great advice everyone!",
+      "commentDateTime": "2025-08-25T18:55:00Z",
+      "contactInformation": true,
+      "geolocationInformation": false,
+      "scheduleInformation": true,
+      "riskLevel": 8
+    },
+    {
+      "comment": "Enjoyed the coffee at the new place downtown. Highly recommend it to anyone in the area!",
+      "commentDateTime": "2025-08-25T14:20:00Z",
+      "contactInformation": false,
+      "geolocationInformation": true,
+      "scheduleInformation": false,
+      "riskLevel": 3
+    },
+    {
+      "comment": "Had a great meeting today. Looking forward to the next steps in the project.",
+      "commentDateTime": "2025-08-24T17:45:00Z",
+      "contactInformation": false,
+      "geolocationInformation": false,
+      "scheduleInformation": false,
+      "riskLevel": 2
+    },
+    {
+      "comment": "Planning to attend the conference next week. Should be very informative!",
+      "commentDateTime": "2025-08-24T09:12:00Z",
+      "contactInformation": false,
+      "geolocationInformation": false,
+      "scheduleInformation": true,
+      "riskLevel": 3
+    }
+  ]
+}
