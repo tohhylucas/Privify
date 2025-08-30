@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npx http-server -p 8000 -o",
     "serve": "npx http-server -p 8000 -o",
-    "dev": "npx live-server --port=8000 --open=/",
+    "dev": "npx live-server --port=8000 --open=/index.html",
     "test": "echo 'No tests configured'"
   },
   "keywords": [

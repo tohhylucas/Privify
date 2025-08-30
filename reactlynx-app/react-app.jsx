@@ -35,8 +35,8 @@ function RiskDistributionChart({ data, isMobile }) {
         datasets: [
           {
             data: counts,
-            backgroundColor: ["#1FB8CD", "#FFC185", "#B4413C"],
-            borderColor: ["#1FB8CD", "#FFC185", "#B4413C"],
+            backgroundColor: ["#25F4EE", "#FF6B35", "#FE2C55"],
+            borderColor: ["#25F4EE", "#FF6B35", "#FE2C55"],
             borderWidth: isMobile ? 1 : 2,
             hoverOffset: isMobile ? 6 : 10,
           },
@@ -69,7 +69,7 @@ function RiskDistributionChart({ data, isMobile }) {
             backgroundColor: "rgba(0, 0, 0, 0.8)",
             titleColor: "#fff",
             bodyColor: "#fff",
-            borderColor: "#1FB8CD",
+            borderColor: "#FE2C55",
             borderWidth: 1,
             titleFont: { size: isMobile ? 11 : 13 },
             bodyFont: { size: isMobile ? 10 : 12 },
@@ -118,12 +118,12 @@ function RiskTrendsChart({ trendData, isMobile }) {
           {
             label: "Risk Score",
             data: trendData.map((item) => item.riskScore),
-            borderColor: "#1FB8CD",
-            backgroundColor: "rgba(31, 184, 205, 0.1)",
+            borderColor: "#FE2C55",
+            backgroundColor: "rgba(254, 44, 85, 0.1)",
             borderWidth: isMobile ? 2 : 3,
             fill: true,
             tension: 0.4,
-            pointBackgroundColor: "#1FB8CD",
+            pointBackgroundColor: "#FE2C55",
             pointBorderColor: "#fff",
             pointBorderWidth: 2,
             pointRadius: isMobile ? 2 : 4,
@@ -142,7 +142,7 @@ function RiskTrendsChart({ trendData, isMobile }) {
             backgroundColor: "rgba(0, 0, 0, 0.8)",
             titleColor: "#fff",
             bodyColor: "#fff",
-            borderColor: "#1FB8CD",
+            borderColor: "#FE2C55",
             borderWidth: 1,
             titleFont: { size: isMobile ? 11 : 13 },
             bodyFont: { size: isMobile ? 10 : 12 },
@@ -201,39 +201,66 @@ function RiskTrendsChart({ trendData, isMobile }) {
 }
 
 function CommentCard({ comment, onClick }) {
+  // Determine risk level class for styling
+  const getRiskClass = (score) => {
+    if (score >= 9) return "risk-critical";
+    if (score >= 7) return "risk-high";
+    if (score >= 4) return "risk-medium";
+    return "risk-low";
+  };
+
   return (
     <button
       type="button"
-      className="comment-card fade-in"
+      className={`comment-card fade-in ${getRiskClass(comment.riskScore)}`}
       style={{ animationDelay: `${comment._delay || 0}s`, cursor: "pointer" }}
       onClick={() => onClick(comment)}
-      aria-label={`Expand comment ${comment.id}`}
+      aria-label={`Expand TikTok comment ${comment.id}`}
     >
       <div className="comment-header">
         <div className="comment-meta">
-          <span className="comment-risk-score">Risk: {comment.riskScore}</span>
+          <span className="comment-risk-score">
+            🚨 Risk: {comment.riskScore}/10
+          </span>
           <span className="comment-timestamp">{comment.timestamp}</span>
         </div>
         <div className="comment-platform">{comment.platform}</div>
       </div>
-      <div className="comment-preview">{comment.preview}</div>
+
+      <div className="comment-preview">
+        <div className="comment-text">{comment.preview}</div>
+      </div>
+
       <div className="comment-footer">
         <div className="pii-tags">
           {comment.piiTypes.map((pii) => (
-            <span key={`${pii}-${comment.id}`} className="pii-tag">
-              {pii}
+            <span
+              key={`${pii}-${comment.id}`}
+              className={`pii-tag pii-${pii.toLowerCase().replace(/\s/g, "-")}`}
+            >
+              {pii === "Contact Information" && "�"}
+              {pii === "Geolocation" && "📍"}
+              {pii === "Routines" && "⏰"}
+              {" " + pii}
             </span>
           ))}
         </div>
-        <div
-          style={{
-            fontSize: "var(--font-size-sm)",
-            color: "var(--text-muted)",
-          }}
-        >
-          Category: {comment.category}
-        </div>
-        <div className="ai-action-suggestion">🤖 {comment.aiAction}</div>
+
+        <div className="ai-action-suggestion">{comment.aiAction}</div>
+
+        {comment.reasoning && (
+          <div className="privacy-reasoning">
+            <span
+              style={{
+                fontSize: "var(--font-size-xs)",
+                color: "var(--text-muted)",
+                fontStyle: "italic",
+              }}
+            >
+              💡 {comment.reasoning}
+            </span>
+          </div>
+        )}
       </div>
     </button>
   );
@@ -243,6 +270,9 @@ function App() {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
+
+  // Initialize data service
+  const dataService = new DataService();
 
   // Detect mobile once at the app level and pass down
   const isMobile = useIsMobile();
@@ -334,7 +364,7 @@ function App() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `privacy-dashboard-${data.user.id}-${Date.now()}.json`;
+    a.download = `tiktok-privacy-dashboard-${data.user.id}-${Date.now()}.json`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -342,17 +372,41 @@ function App() {
   }
 
   function expandComment(comment) {
-    alert(
-      `Full Comment: ${comment.fullText}\n\nRisk Score: ${
-        comment.riskScore
-      }\nPII Types: ${comment.piiTypes.join(", ")}\nPlatform: ${
-        comment.platform
-      }\nCategory: ${comment.category}\nAI Recommendation: ${
-        comment.aiAction
-      }\nTimestamp: ${comment.timestamp}`
+    const details = [
+      `� TikTok Comment Details`,
+      ``,
+      `� Full Comment: ${comment.fullText}`,
+      ``,
+      `🚨 Risk Score: ${comment.riskScore}/10`,
+      `🏷️ Privacy Information Types: ${
+        comment.piiTypes.join(", ") || "None detected"
+      }`,
+      `📱 Platform: ${comment.platform}`,
+      `📂 Category: ${comment.category}`,
+      `🎯 AI Action: ${comment.aiAction}`,
+      `⏰ Timestamp: ${comment.timestamp}`,
+      ``,
+      `💡 Privacy Analysis: ${
+        comment.reasoning || "No specific reasoning provided"
+      }`,
+    ].join("\n");
+
+    alert(details);
+  }
+
+  // Show loading while data is being fetched
+  if (!data || isLoading) {
+    return (
+      <div id="app">
+        <div id="loading-indicator" className="loading">
+          <div className="spinner"></div>
+          <p>Loading TikTok privacy analysis...</p>
+        </div>
+      </div>
     );
   }
 
+  // Process data for display after loading is complete
   const recent = data.riskTrends.slice(-7);
   const trend =
     recent[recent.length - 1].riskScore > recent[0].riskScore
@@ -366,25 +420,13 @@ function App() {
     return "low";
   };
 
-  // Show loading while data is being fetched
-  if (!data || isLoading) {
-    return (
-      <div id="app">
-        <div id="loading-indicator" className="loading">
-          <div className="spinner"></div>
-          <p>Loading privacy analysis...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div id="app">
       {/* Header */}
       <header className="dashboard-header">
-        <h1>Personal Privacy Dashboard</h1>
+        <h1>TikTok Privacy Dashboard</h1>
         <div className="user-info">
-          <span id="current-user">{`${data.user.name} (${data.user.id}) - ${data.user.status}`}</span>
+          <span id="current-user">{`${data.user.name} (@${data.user.id}) - ${data.user.status}`}</span>
           <div className="last-updated">
             Last updated: <span id="last-updated">{lastUpdated}</span>
           </div>
@@ -394,20 +436,20 @@ function App() {
       {/* AI Executive Summary */}
       <section className="ai-summary-section">
         <div className="section-header">
-          <h2>🤖 AI Executive Summary</h2>
+          <h2>🎯 AI Privacy Analysis</h2>
           <div className="ai-status">
             <span className="ai-indicator active"></span>
-            <span>AI Active</span>
+            <span>TikTok AI Active</span>
           </div>
         </div>
         <div className="summary-content">
           <div className="overview-card">
-            <h3>Overview</h3>
+            <h3>TikTok Comment Analysis Overview</h3>
             <p id="summary-overview">{data.aiExecutiveSummary.overview}</p>
           </div>
           <div className="summary-grid">
             <div className="summary-item">
-              <h4>Key Findings</h4>
+              <h4>TikTok Privacy Insights</h4>
               <ul id="key-findings">
                 {data.aiExecutiveSummary.keyFindings.map((finding) => (
                   <li key={finding} className="slide-in">
@@ -417,7 +459,7 @@ function App() {
               </ul>
             </div>
             <div className="summary-item">
-              <h4>Priority Actions</h4>
+              <h4>Recommended Actions</h4>
               <ul id="priority-actions">
                 {data.aiExecutiveSummary.priorities.map((p) => (
                   <li key={p} className="slide-in">
@@ -425,26 +467,6 @@ function App() {
                   </li>
                 ))}
               </ul>
-            </div>
-            <div className="summary-item">
-              <h4>Compliance Status</h4>
-              <div id="compliance-status">
-                <div
-                  className={`compliance-badge ${data.aiExecutiveSummary.compliance.status}`}
-                >
-                  {data.aiExecutiveSummary.compliance.status
-                    .replace("-", " ")
-                    .toUpperCase()}
-                </div>
-                <div style={{ fontSize: "var(--font-size-sm)" }}>
-                  {data.aiExecutiveSummary.compliance.issues} issues •{" "}
-                  {data.aiExecutiveSummary.compliance.improvements} improvements
-                  <br />
-                  <span style={{ color: "var(--text-muted)" }}>
-                    Next review: {data.aiExecutiveSummary.compliance.nextReview}
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -455,13 +477,13 @@ function App() {
         <div className="charts-grid">
           <div className="chart-container">
             <div className="chart-header">
-              <h3>Risk Score Distribution</h3>
+              <h3>Comment Risk Distribution</h3>
               <div className="ai-insight">
-                <span id="risk-distribution-insight">{`AI Analysis: ${
+                <span id="risk-distribution-insight">{`TikTok AI Analysis: ${
                   data.user.avgRiskScore
                 } average risk score indicates ${getRiskLevel(
                   data.user.avgRiskScore
-                )} privacy risk profile`}</span>
+                )} privacy risk in your comments`}</span>
               </div>
             </div>
             <div className="chart-wrapper">
@@ -473,9 +495,9 @@ function App() {
           </div>
           <div className="chart-container">
             <div className="chart-header">
-              <h3>Risk Trends (30 Days)</h3>
+              <h3>Privacy Risk Trends (30 Days)</h3>
               <div className="ai-insight">
-                <span id="risk-trends-insight">{`AI Trend Analysis: Risk scores are ${trend} over the last 7 days`}</span>
+                <span id="risk-trends-insight">{`TikTok Trend Analysis: Your comment privacy risk is ${trend} over the last 7 days`}</span>
               </div>
             </div>
             <div className="chart-wrapper">
@@ -491,12 +513,12 @@ function App() {
       {/* Recent High-Risk Comments */}
       <section className="comments-section">
         <div className="section-header">
-          <h2>⚠️ Recent High-Risk Comments</h2>
+          <h2>⚠️ High-Risk TikTok Comments</h2>
           <div className="comments-count">
             <span id="high-risk-count">
               {data.recentHighRiskComments.length}
             </span>{" "}
-            high-risk comments found
+            high-risk comments identified in your TikTok activity
           </div>
         </div>
         <div className="comments-container" id="comments-container">
@@ -516,7 +538,7 @@ function App() {
         className={`loading ${isLoading ? "" : "hidden"}`}
       >
         <div className="spinner"></div>
-        <p>Loading privacy analysis...</p>
+        <p>Loading TikTok privacy analysis...</p>
       </div>
     </div>
   );

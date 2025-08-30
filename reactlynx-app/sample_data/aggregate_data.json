@@ -25,12 +25,6 @@
       "Complete privacy training module (required)",
       "Set up automatic PII detection alerts",
       "Review privacy settings for support interactions"
-    ],
-    "compliance": {
-      "status": "at-risk",
-      "issues": 12,
-      "improvements": 3,
-      "nextReview": "2025-09-05"
-    }
+    ]
   }
 }

@@ -98,29 +98,32 @@ class DataService {
       .slice(0, 8) // Get top 8 most recent high-risk comments
       .map((comment, index) => {
         const piiTypes = [];
-        if (comment.contactInformation) piiTypes.push("Email", "Phone");
-        if (comment.geolocationInformation) piiTypes.push("Location");
-        if (comment.scheduleInformation) piiTypes.push("Schedule");
 
-        // Extract name if present in comment
-        if (comment.comment.toLowerCase().includes("john"))
-          piiTypes.push("Name");
+        // Map boolean flags to correct tag names
+        if (comment.contactInformation) {
+          piiTypes.push("Contact Information");
+        }
 
-        // Remove duplicates
-        const uniquePiiTypes = [...new Set(piiTypes)];
+        if (comment.geolocationInformation) {
+          piiTypes.push("Geolocation");
+        }
+
+        if (comment.scheduleInformation) {
+          piiTypes.push("Routines");
+        }
 
         return {
-          id: `comment_${1543 - index}`,
+          id: `tiktok_comment_${Date.now() - index}`,
           preview:
-            comment.comment.substring(0, 100) +
-            (comment.comment.length > 100 ? "..." : ""),
+            comment.comment.substring(0, 120) +
+            (comment.comment.length > 120 ? "..." : ""),
           fullText: comment.comment,
           riskScore: comment.riskLevel,
-          piiTypes: uniquePiiTypes,
+          piiTypes: piiTypes,
           timestamp: this.formatTimestamp(comment.commentDateTime),
-          platform: this.determinePlatform(comment),
-          aiAction: this.determineAiAction(comment.riskLevel),
-          category: this.determineCategory(comment),
+          platform: "TikTok",
+          category: this.determineTikTokCategory(comment),
+          reasoning: this.generateSimpleReasoning(comment),
         };
       });
 
@@ -149,23 +152,126 @@ class DataService {
     return "Discussion Board";
   }
 
-  determineAiAction(riskLevel) {
-    if (riskLevel >= 9) return "Auto-redacted and user notified";
-    if (riskLevel >= 8)
-      return "High-risk pattern detected - review recommended";
-    if (riskLevel >= 7) return "Privacy education notification sent";
-    return "Moderate risk - monitoring enabled";
+  generateReasoning(comment) {
+    const reasons = [];
+
+    if (comment.contactInformation) {
+      reasons.push("Contains contact information (email/phone)");
+    }
+
+    if (comment.geolocationInformation) {
+      reasons.push("Contains location information");
+    }
+
+    if (comment.scheduleInformation) {
+      reasons.push("Contains schedule/timing information");
+    }
+
+    if (reasons.length === 0) {
+      return "Risk level elevated due to content analysis";
+    }
+
+    let reasoning = "Privacy risk identified: " + reasons.join(", ");
+
+    // Add risk level context
+    if (comment.riskLevel >= 9) {
+      reasoning += " - Critical exposure requiring immediate review";
+    } else if (comment.riskLevel >= 8) {
+      reasoning += " - High risk exposure detected";
+    } else if (comment.riskLevel >= 7) {
+      reasoning += " - Moderate privacy risk detected";
+    }
+
+    return reasoning;
   }
 
-  determineCategory(comment) {
-    if (comment.contactInformation && comment.comment.includes("help"))
-      return "Support Request";
-    if (comment.geolocationInformation && comment.contactInformation)
-      return "Social";
-    if (comment.scheduleInformation && comment.contactInformation)
-      return "Transaction";
-    if (comment.geolocationInformation) return "Educational";
-    return "Personal";
+  generateSimpleReasoning(comment) {
+    const reasons = [];
+
+    if (comment.contactInformation) {
+      reasons.push("Contains contact information (email/phone)");
+    }
+
+    if (comment.geolocationInformation) {
+      reasons.push("Contains location information");
+    }
+
+    if (comment.scheduleInformation) {
+      reasons.push("Contains schedule/timing information");
+    }
+
+    if (reasons.length === 0) {
+      return "Risk level elevated due to content analysis";
+    }
+
+    let reasoning = reasons.join(", ");
+
+    // Add risk level context
+    if (comment.riskLevel >= 9) {
+      reasoning += " - Critical exposure requiring immediate review";
+    } else if (comment.riskLevel >= 8) {
+      reasoning += " - High risk exposure detected";
+    } else if (comment.riskLevel >= 7) {
+      reasoning += " - Moderate privacy risk detected";
+    }
+
+    return reasoning;
+  }
+
+  determineTikTokCategory(comment) {
+    const text = comment.comment.toLowerCase();
+
+    if (
+      text.includes("dance") ||
+      text.includes("trend") ||
+      text.includes("moves")
+    ) {
+      return "Dance/Trend";
+    }
+    if (
+      text.includes("makeup") ||
+      text.includes("tutorial") ||
+      text.includes("beauty")
+    ) {
+      return "Beauty/Tutorial";
+    }
+    if (
+      text.includes("collab") ||
+      text.includes("dm") ||
+      text.includes("follow")
+    ) {
+      return "Collaboration";
+    }
+    if (
+      text.includes("cry") ||
+      text.includes("dead") ||
+      text.includes("obsessed")
+    ) {
+      return "Reaction";
+    }
+    if (
+      text.includes("aesthetic") ||
+      text.includes("energy") ||
+      text.includes("vibe")
+    ) {
+      return "Lifestyle";
+    }
+    if (
+      text.includes("concert") ||
+      text.includes("show") ||
+      text.includes("event")
+    ) {
+      return "Entertainment";
+    }
+    if (
+      text.includes("job") ||
+      text.includes("work") ||
+      text.includes("shift")
+    ) {
+      return "Personal Life";
+    }
+
+    return "General Comment";
   }
 
   calculateRiskDistribution() {

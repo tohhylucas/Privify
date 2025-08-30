@@ -8,27 +8,27 @@
 }
 
 :root {
-  /* Color Palette */
-  --primary-color: #1fb8cd;
-  --secondary-color: #2a2a2a;
-  --accent-color: #ffc185;
-  --danger-color: #b4413c;
-  --success-color: #4caf50;
-  --warning-color: #ff9800;
-  --info-color: #2196f3;
+  /* TikTok Color Palette */
+  --primary-color: #fe2c55; /* TikTok Razzmatazz - Main brand color */
+  --secondary-color: #000000; /* TikTok Black */
+  --accent-color: #25f4ee; /* TikTok Splash - Cyan accent */
+  --danger-color: #fe2c55; /* Use TikTok pink for high risk */
+  --success-color: #25f4ee; /* Use TikTok cyan for success */
+  --warning-color: #ff6b35; /* Orange for medium risk */
+  --info-color: #25f4ee; /* TikTok cyan for info */
 
   /* Background Colors */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --bg-dark: #1a1a1a;
+  --bg-primary: #ffffff; /* TikTok White */
+  --bg-secondary: #f8f8f8; /* Light gray for cards */
+  --bg-dark: #000000; /* TikTok Black */
   --bg-card: #ffffff;
-  --bg-hover: #f0f8ff;
+  --bg-hover: #fef7f8; /* Light pink hover */
 
   /* Text Colors */
-  --text-primary: #2a2a2a;
-  --text-secondary: #666666;
-  --text-muted: #999999;
-  --text-white: #ffffff;
+  --text-primary: #000000; /* TikTok Black for primary text */
+  --text-secondary: #666666; /* Dark gray for secondary text */
+  --text-muted: #999999; /* Light gray for muted text */
+  --text-white: #ffffff; /* TikTok White */
 
   /* Spacing */
   --spacing-xs: 4px;
@@ -77,30 +77,38 @@ body {
 
 /* Header Styles */
 .dashboard-header {
-  background: linear-gradient(135deg, var(--primary-color), #159ba8);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--accent-color)
+  );
   color: var(--text-white);
   padding: var(--spacing-lg);
   border-radius: var(--radius-lg);
   margin-bottom: var(--spacing-lg);
   box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="60" cy="70" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="30" cy="80" r="1.5" fill="rgba(255,255,255,0.1)"/></svg>');
+  pointer-events: none;
 }
 
 .dashboard-header h1 {
+  position: relative;
+  z-index: 1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   font-size: var(--font-size-xxl);
-  font-weight: 700;
   margin-bottom: var(--spacing-sm);
-}
-
-.user-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: var(--font-size-sm);
-  opacity: 0.9;
-}
-
-.last-updated {
-  text-align: right;
 }
 
 /* Section Styles */
@@ -124,8 +132,13 @@ section {
 
 .section-header h2 {
   font-size: var(--font-size-xl);
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
+  background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.01em;
 }
 
 /* AI Status Indicator */
@@ -162,7 +175,7 @@ section {
 }
 
 .overview-card {
-  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  background: linear-gradient(135deg, #f8f0f2, #fef7f8);
   padding: var(--spacing-lg);
   border-radius: var(--radius-md);
   border-left: 4px solid var(--primary-color);
@@ -214,36 +227,6 @@ section {
   position: absolute;
   left: 0;
   font-weight: bold;
-}
-
-/* Compliance Status */
-#compliance-status {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.compliance-badge {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: var(--font-size-sm);
-  text-transform: uppercase;
-}
-
-.compliance-badge.compliant {
-  background: #d1fae5;
-  color: #065f46;
-}
-
-.compliance-badge.at-risk {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.compliance-badge.non-compliant {
-  background: #fee2e2;
-  color: #991b1b;
 }
 
 /* Charts Section */
@@ -376,12 +359,34 @@ section {
   border-radius: var(--radius-md);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-md);
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
 }
 
 .comment-card:hover {
+  transform: translateY(-4px) scale(1.02);
   border-color: var(--primary-color);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 8px 25px rgba(254, 44, 85, 0.15);
+}
+
+.comment-card.risk-critical {
+  border-left: 4px solid var(--danger-color);
+  background: linear-gradient(135deg, #fef7f8, #ffffff);
+}
+
+.comment-card.risk-high {
+  border-left: 4px solid var(--warning-color);
+  background: linear-gradient(135deg, #fff8f0, #ffffff);
+}
+
+.comment-card.risk-medium {
+  border-left: 4px solid #ffd700;
+  background: linear-gradient(135deg, #fffdf0, #ffffff);
+}
+
+.comment-card.risk-low {
+  border-left: 4px solid var(--success-color);
+  background: linear-gradient(135deg, #f0ffff, #ffffff);
 }
 
 .comment-header {
@@ -398,12 +403,14 @@ section {
 }
 
 .comment-risk-score {
-  background: var(--danger-color);
+  background: linear-gradient(45deg, var(--danger-color), #ff4757);
   color: var(--text-white);
   padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-lg);
   font-size: var(--font-size-sm);
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 8px rgba(254, 44, 85, 0.3);
 }
 
 .comment-timestamp {
@@ -435,26 +442,53 @@ section {
 }
 
 .pii-tag {
-  background: var(--primary-color);
+  background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
   color: var(--text-white);
+  border: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
   font-weight: 500;
 }
 
-.comment-platform {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
+.pii-tag:hover {
+  transform: scale(1.05);
 }
 
-.ai-action-suggestion {
-  font-size: var(--font-size-sm);
-  color: var(--primary-color);
-  font-weight: 500;
-  background: #f0f9ff;
-  padding: var(--spacing-xs) var(--spacing-sm);
+.pii-tag.pii-contact-information {
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+}
+
+.pii-tag.pii-geolocation {
+  background: linear-gradient(45deg, #26de81, #20bf6b);
+}
+
+.pii-tag.pii-routines {
+  background: linear-gradient(45deg, #fed330, #f39801);
+}
+
+/* Privacy Reasoning Styling */
+.privacy-reasoning {
+  flex-basis: 100%;
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background: #f8f9fa;
   border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent-color);
+}
+
+.comment-category {
+  display: flex;
+  align-items: center;
+}
+
+.comment-text {
+  line-height: 1.5;
+  color: var(--text-primary);
 }
 
 /* Loading Styles */
@@ -483,12 +517,13 @@ section {
   height: 40px;
   border: 4px solid #f3f3f3;
   border-top: 4px solid var(--primary-color);
+  border-right: 4px solid var(--accent-color);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: tiktok-spin 1s linear infinite;
   margin-bottom: var(--spacing-md);
 }
 
-@keyframes spin {
+@keyframes tiktok-spin {
   0% {
     transform: rotate(0deg);
   }
@@ -513,7 +548,7 @@ section {
 }
 
 .comments-container::-webkit-scrollbar-thumb:hover {
-  background: #159ba8;
+  background: #d12447;
 }
 
 /* Mobile Responsive Design */
@@ -529,6 +564,7 @@ section {
 
   .dashboard-header h1 {
     font-size: var(--font-size-xl);
+    text-align: center;
   }
 
   .user-info {
