@@ -1,3 +1,24 @@
+# Privify
+
+## 📋 Table of Contents
+
+- [Privify Backend](#privify-backend)
+  - [Quick Start](#-quick-start)
+  - [API Endpoints](#-api-endpoints)
+  - [Example Inference](#-example-inference)
+  - [File Structure & Purpose](#-file-structure--purpose)
+  - [Privacy Features](#-privacy-features)
+  - [Development](#-development)
+  - [Data Flow](#-data-flow)
+  - [Troubleshooting](#-troubleshooting)
+- [Privify Frontend](#privify-frontend)
+  - [Project Structure](#-project-structure)
+  - [Quick Start](#-quick-start-1)
+  - [Technology Stack](#-technology-stack)
+  - [Sample Data](#-sample-data)
+
+---
+
 # Privify Backend
 
 This backend implements a privacy-preserving comment analysis system using Fully Homomorphic Encryption (FHE) and on-device inference. The system consists of two servers that work together to analyze TikTok comments while maintaining user privacy.
@@ -32,11 +53,13 @@ pip install -r requirements.txt
 You need to run two servers simultaneously in separate terminal windows:
 
 **Terminal 1 - On-Device Server (Port 8000):**
+
 ```bash
 uvicorn on_device_server:app --reload --host 127.0.0.1 --port 8000
 ```
 
 **Terminal 2 - TikTok Server (Port 5000):**
+
 ```bash
 uvicorn tiktok_server:app --reload --host 127.0.0.1 --port 5000
 ```
@@ -46,25 +69,29 @@ uvicorn tiktok_server:app --reload --host 127.0.0.1 --port 5000
 ### On-Device Server (Port 8000)
 
 **POST** `/process`
+
 - **Purpose**: Main endpoint for comment analysis
 - **Request Body**:
+
 ```json
 {
-    "comment": "lol my street, literally see my bike rack"
+  "comment": "lol my street, literally see my bike rack"
 }
 ```
-- **Response**: Category classification, risk score, reasoning, and suggestions
 
+- **Response**: Category classification, risk score, reasoning, and suggestions
 
 ## 🔍 Example Inference
 
 ### Input Comment
+
 ```
 "can't believe u at pine&4th, memories"
 ```
 
 ### Output Analysis
-**Category**: Location/Geoinformation Violation  
+
+**Category**: Location/Geoinformation Violation
 
 **Risk Score**: 9
 
@@ -75,18 +102,22 @@ uvicorn tiktok_server:app --reload --host 127.0.0.1 --port 5000
 ## 📁 File Structure & Purpose
 
 ### Core Server Files
+
 - **`on_device_server.py`**: Main server that receives comments, handles encryption/decryption, and provides the public API endpoint
 - **`tiktok_server.py`**: Simulates TikTok's ML infrastructure, runs FHE inference on encrypted data and returns encrypted results
 
 ### ML Training & FHE-Compliance Models
+
 - **`train_model.py`**: Trains a classifier to predict comment categories using Concrete ML library, saves FHE-compatible model to `fhe_directory/`
 - **`train_risk_model.py`**: Trains a regressor to predict risk scores using Concrete ML library, saves FHE-compatible model to `fhe_directory_risk/`
 
 ### Client & Utilities
+
 - **`client_side.py`**: Handles quantization, encryption, serialization, FHE server communication, and decryption to output final category and risk score
 - **`utils.py`**: Helper functions for text processing and risk score post-processing
 
 ### Data & Models
+
 - **`fhe_directory/`**: Contains FHE-compatible category classification model and client
 - **`fhe_directory_risk/`**: Contains FHE-compatible risk scoring model and client
 - **`comments.csv`**: Sample training data with 600+ synthetic comments, category labels, and risk scores generated using GPT
@@ -100,12 +131,11 @@ uvicorn tiktok_server:app --reload --host 127.0.0.1 --port 5000
 ## 🛠️ Development
 
 ### Prerequisites
+
 - Python 3.8+
 - Concrete ML library
 - FastAPI
 - Uvicorn
-
-
 
 ## 📊 Data Flow
 
