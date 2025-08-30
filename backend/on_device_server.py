@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from llm_test import safe_generate 
+from language_models import safe_generate 
 from client_side import run_inference
+import json
 
 app = FastAPI()
 
@@ -43,3 +44,22 @@ async def process_comment(req: CommentRequest):
     print("--------------------------------------------------")
 
     return {"response": llm_output}
+
+class CommentHistoryRequest(BaseModel):
+    comment_history: str  # chunk of comment history with reasoning/suggestions
+
+@app.post("/privacy_analysis")
+async def privacy_analysis(req: CommentHistoryRequest):
+    print("--------------------------------------------------")
+    print("Step 1) Receiving comment history for privacy analysis")
+    print(f"Received comment history:\n{req.comment_history}")
+    print("--------------------------------------------------")
+
+    print("Step 2) Generating privacy analysis using Phi-3")
+    analysis_result = generate_privacy_analysis(req.comment_history)
+    print("Privacy analysis generation done.")
+    print("--------------------------------------------------")
+    print(f"Result:\n{json.dumps(analysis_result, indent=2)}")
+    print("--------------------------------------------------")
+
+    return {"privacy_analysis": analysis_result}

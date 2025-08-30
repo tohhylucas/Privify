@@ -1,6 +1,6 @@
 
 import torch
-from transformers import pipeline
+from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
 from typing import List, Dict
 import re
 import pandas as pd
@@ -126,7 +126,81 @@ def process_csv(input_csv: str, output_csv: str) -> None:
     df.to_csv(output_csv, index=False)
     print(f"✅ Done! Saved results to {output_csv}")
 
+def generate_privacy_analysis(comment_history: str,
+                              model_name: str = "microsoft/Phi-3-mini-4k-instruct",
+                              device: str = "mps",
+                              max_new_tokens: int = 300,
+                              temperature: float = 0.2,
+                              do_sample: bool = True) -> dict:
+    """
+    Generate a structured privacy analysis JSON from a chunk of comment history using Phi-3.
 
-# Example usage
-# process_csv("new_comments.csv", "output_with_reasons.csv")
-# generate_moderation_response("User's location is New York City.", ["geoinformation"], 7)
+    Args:
+        comment_history (str): Comments with reasoning/suggestions for improving privacy.
+        model_name (str): Phi-3 model identifier.
+        device (str): 'cpu' or 'cuda' depending on your hardware.
+        max_new_tokens (int): Max tokens to generate.
+        temperature (float): Sampling temperature.
+        do_sample (bool): Whether to use sampling.
+
+    Returns:
+        dict: Structured JSON with overall_summary, pattern, key_findings, suggestions.
+    """
+    torch.manual_seed(0)  # reproducibility
+    
+    # Load model and tokenizer
+    model = AutoModelForCausalLM.from_pretrained(
+        model_name,
+        device_map=device,
+        torch_dtype="auto",
+        trust_remote_code=True
+    )
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    phi_pipe = pipeline(
+        "text-generation",
+        model=model,
+        tokenizer=tokenizer
+    )
+
+    # Construct prompt
+    prompt = f"""
+You are a privacy analyst. Based on the following user's comment history, reasoning, and suggestions for improving privacy, generate a structured JSON summarizing the user's privacy risks and recommendations.
+
+Comment history:
+{comment_history}
+
+Output JSON in this exact format with four fields:
+{{
+  "overall_summary": "...",
+  "pattern": "...",
+  "key_findings": "...",
+  "suggestions": "..."
+}}
+
+Rules:
+- Keep the output concise but informative.
+- Focus on patterns that expose personal information, routines, locations, or habits.
+- Suggestions must be actionable to improve privacy.
+- Do not add any extra text outside the JSON.
+"""
+
+    # Generate output
+    generation_args = {
+        "max_new_tokens": max_new_tokens,
+        "return_full_text": False,
+        "temperature": temperature,
+        "do_sample": do_sample
+    }
+
+    output = phi_pipe(prompt, **generation_args)
+    generated_text = output[0]["generated_text"]
+
+    # Attempt to parse JSON safely
+    try:
+        json_start = generated_text.index("{")
+        json_end = generated_text.rindex("}") + 1
+        json_str = generated_text[json_start:json_end]
+        return json.loads(json_str)
+    except Exception as e:
+        # Fallback if parsing fails
+        return {"error": f"Failed to parse JSON: {e}", "raw_output": generated_text}
